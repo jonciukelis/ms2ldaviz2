@@ -109,6 +109,9 @@ flask/
 # Unused notes and stuff
 not_in_use/
 
+# React production, must include, PythonAnywhere npm does not work
+# /react/build
+
 
 #===========================================================
 # React files:
@@ -121,8 +124,6 @@ not_in_use/
 # testing
 /react/coverage
 
-# production
-/react/build
 
 # misc
 /react/.DS_Store
