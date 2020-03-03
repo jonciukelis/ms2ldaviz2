@@ -46,6 +46,9 @@ import MotifsPage from './modules/motifs.js';
 //Import Motifs page
 import EmptyPage from './modules/empty.js';
 
+//Import Options page
+import Options from './modules/options.js';
+
 //Table testing
 //import EmptyPage from './modules/table.js';
 
@@ -73,6 +76,12 @@ class App extends React.Component {
       features: [],
       motifs: [],
       docs: [],
+      showOptions: false,
+      options: {
+        docs: [],
+        motifs: [],
+        thresholds: [],
+      }
     };
     let url_string = window.location.href; // www.test.com?filename=test
     let url = new URL(url_string);
@@ -111,8 +120,10 @@ class App extends React.Component {
         about: false,
         import: false,
         legacy: false,
+        showOptions: false,
         modal: false,
         showdoc: false,
+        showmotif: false,
         showgenerate: false,
       })
     } else {
@@ -146,6 +157,20 @@ class App extends React.Component {
       modalName: (<h1>About</h1>),
       modal: true,
       about: true,
+    })
+  }
+
+  optionsModal() {
+    console.log("options1")
+    this.setState({
+      modalName: (<h1>Options</h1>),
+      modal: true,
+      showOptions: true,
+    })
+  }
+  optionChange(options){
+    this.setState({
+      options: options,
     })
   }
 
@@ -197,6 +222,7 @@ class App extends React.Component {
     })
   }
 
+  //Other functions
   exportJSON() {
     console.log("export1")
     var a = document.createElement('A');
@@ -273,6 +299,7 @@ class App extends React.Component {
                     <NavDropdown.Item>Store In-Browser</NavDropdown.Item>
                   </NavDropdown>
                   <Nav.Link onClick={() => this.discardLDA()}>Discard</Nav.Link>
+                  <Nav.Link onClick={() => this.optionsModal()}>Options</Nav.Link>
                 </ > : < >
                   <Nav.Link onClick={() => this.importJSON()}>Import</Nav.Link>
                   <Nav.Link target="_blank" href={"../legacy/"} >Legacy</Nav.Link>
@@ -298,6 +325,8 @@ class App extends React.Component {
             <AboutPage /> : null}
           {this.state.import ?
             <ImportJSON onChange={e => this.fileJSON(e)} /> : null}
+          {this.state.showOptions ?
+            <Options options={this.state.options} optionChange={(options) => this.optionChange(options)} /> : null}
           {this.state.showdoc ?
             <DocPage info={this.state.lda.doc_metadata[this.state.dockey]} features={this.state.features} motifs={this.state.motifs} showMotif={(key) => this.showMotif(key)} /> : null}
           {this.state.showmotif ?
