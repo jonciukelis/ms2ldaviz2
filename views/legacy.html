@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %} Legacy Import/Export {% endblock %}
+{% block content %}
+<div class="container">
+	<br>
+	<h1 class="text-center">Legacy Import/Export</h1>
+	<hr>
+	<div class="row">
+		<aside class="col-sm-6">
+			<div class="card">
+				<article class="card-body">
+					<h4 class="card-title mb-4 mt-1">LDA -> JSON</h4>
+					<form method="post" action="/decode/" enctype="multipart/form-data"></form>
+					<div class="form-group">
+						<label>Select file</label>
+						<input class="form-control-file" type="file" name="file" autocomplete="off" required>
+					</div>
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary btn-block">Submit</button>
+					</div>
+					</form>
+				</article>
+			</div>
+
+		</aside>
+		<aside class="col-sm-6">
+			<div class="card border-primary">
+				<article class="card-body">
+					<h4 class="card-title mb-4 mt-1">JSON -> LDA</h4>
+					<form method="post" action="/decode/" enctype="multipart/form-data"></form>
+					<div class="form-group">
+						<label>Select file</label>
+						<input class="form-control-file" type="file" name="file" autocomplete="off" required>
+					</div>
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary btn-block">Submit</button>
+					</div>
+					</form>
+				</article>
+			</div>
+
+		</aside>
+	</div>
+	<br>
+	<hr>
+	<p class="text-center">Legacy file import and export takes a while, large files need to make a round trip to the server that formats them with limited resources.</p>
+</div>
+{% endblock %}

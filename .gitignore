@@ -102,3 +102,35 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Environment
+flask/
+
+# Unused notes and stuff
+not_in_use/
+
+
+#===========================================================
+# React files:
+
+# dependencies
+/react/node_modules
+/react/.pnp
+.pnp.js
+
+# testing
+/react/coverage
+
+# production
+/react/build
+
+# misc
+/react/.DS_Store
+/react/.env.local
+/react/.env.development.local
+/react/.env.test.local
+/react/.env.production.local
+
+/react/npm-debug.log*
+/react/yarn-debug.log*
+/react/yarn-error.log*
