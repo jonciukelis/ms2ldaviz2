@@ -109,29 +109,9 @@ flask/
 # Unused notes and stuff
 not_in_use/
 
-# React production, must include, PythonAnywhere npm does not work
-# /react/build
-
-
 #===========================================================
 # React files:
 
 # dependencies
 /react/node_modules
-/react/.pnp
-.pnp.js
 
-# testing
-/react/coverage
-
-
-# misc
-/react/.DS_Store
-/react/.env.local
-/react/.env.development.local
-/react/.env.test.local
-/react/.env.production.local
-
-/react/npm-debug.log*
-/react/yarn-debug.log*
-/react/yarn-error.log*
