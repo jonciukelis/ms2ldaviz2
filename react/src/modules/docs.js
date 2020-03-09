@@ -29,19 +29,18 @@ export default class DocsPage extends React.Component {
         let columns = []
         columns.push({Header: 'Name', accessor: 'name'})
         for (let key of Object.keys(props.lda.doc_metadata[Object.keys(props.lda.doc_metadata)[0]])) {
-            columns.push({Header: key, accessor: key})
+            if(props.options.docs[key]){
+                columns.push({Header: key, accessor: key})
+                console.log(props.options.docs[key])
+            }
         }
-        //Metadata
-        let data = []
-        for (let key of Object.keys(props.lda.doc_metadata)) {
-            data.push({name: key,...props.lda.doc_metadata[key]})
-        }
+
         this.state = {
             search: "",
             searchtemp: "",
             columns: columns,
             searchData: searchData,
-            data: data
+            lda: props.lda
         }
         this.onChangeDebounced = debounce(this.onChangeDebounced, 500)
     }
@@ -50,7 +49,7 @@ export default class DocsPage extends React.Component {
         if (this.state.searchtemp !== nextState.searchtemp) {
             return false;
         } else {
-            return true;
+            return true
         }
     }
 
@@ -69,6 +68,13 @@ export default class DocsPage extends React.Component {
     }
 
     render() {
+        const data = []
+        for (let key of Object.keys(this.state.searchData)) {
+            if (this.state.searchData[key].includes(this.state.searchtemp)){
+                data.push({name: key,...this.state.lda.doc_metadata[key]})
+            }
+        }
+
         return (
             <Card body className="mx-auto">
                 <Card.Header>
@@ -80,7 +86,7 @@ export default class DocsPage extends React.Component {
                         className="mr-sm-2"
                     />
                 </Card.Header>
-                <Table data={this.state.data} columns={this.state.columns} onClick={(key)=>{this.props.showDoc(key)}}/>
+                <Table data={data} columns={this.state.columns} onClick={(key)=>{this.props.showDoc(key)}}/>
             </Card>
         );
     }

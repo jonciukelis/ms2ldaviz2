@@ -21,18 +21,21 @@ export default function MyTable({ columns, data, onClick }) {
     page,
     canPreviousPage,
     canNextPage,
+    // eslint-disable-next-line
     pageOptions,
     pageCount,
     gotoPage,
     nextPage,
     previousPage,
+    // eslint-disable-next-line
     setPageSize,
+    // eslint-disable-next-line
     state: { pageIndex, pageSize },
   } = useTable(
     {
       columns,
       data,
-      initialState: { pageIndex: 0, pageSize: 20 },
+      initialState: { pageIndex: 0, pageSize: 10 },
     },
     useSortBy,
     usePagination
@@ -40,7 +43,7 @@ export default function MyTable({ columns, data, onClick }) {
 
   // Render Data Table UI
   return (
-    <>
+    <div className="table-container">
       <Table {...getTableProps()} striped bordered hover size="sm">
         <thead>
           {headerGroups.map(headerGroup => (
@@ -66,7 +69,7 @@ export default function MyTable({ columns, data, onClick }) {
             return (
               <tr {...row.getRowProps()} onClick={ () => {onClick(row.cells[0].value)}}>
                 {row.cells.map(cell => {
-                  return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                  return <td {...cell.getCellProps()}><p className="table-cell">{cell.render('Cell')}</p></td>
                 })}
               </tr>
             )
@@ -81,7 +84,7 @@ export default function MyTable({ columns, data, onClick }) {
           <Pagination.Prev onClick={() => previousPage()} disabled={!canPreviousPage} />
           
           <input
-            value={pageIndex + 1}
+            value={String(pageIndex + 1) + " (" + String(pageCount) + ") "}
             onChange={e => {
               const page = e.target.value ? Number(e.target.value) - 1 : 0
               gotoPage(page)
@@ -92,7 +95,7 @@ export default function MyTable({ columns, data, onClick }) {
           <Pagination.Last onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage} />
         </Pagination>
       </div>
-    </>
+    </div>
 
   )
 }

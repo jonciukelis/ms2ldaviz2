@@ -115,6 +115,9 @@ class App extends React.Component {
 
   setModalShow(showstate) {
     if (showstate === false) {
+      if (this.state.showOptions){
+
+      }
       this.setState({
         modalName: "",
         about: false,
@@ -168,6 +171,7 @@ class App extends React.Component {
       showOptions: true,
     })
   }
+
   optionChange(options){
     this.setState({
       options: options,
@@ -219,6 +223,7 @@ class App extends React.Component {
       features: features,
       motifs: [],
       docs: docs,
+      motifkey: key,
     })
   }
 
@@ -254,6 +259,8 @@ class App extends React.Component {
   discardLDA() {
     console.log("discard")
     this.setState({
+      bymotifs: false,
+      bydocs: false,
       imported: false,
       lda: "",
     })
@@ -263,8 +270,24 @@ class App extends React.Component {
     var file = event.target.files[0];
     var reader = new FileReader();
     reader.onload = (event) => {
+      let lda = JSON.parse(event.target.result)
+      let options = {
+        docs: [],
+        motifs: [],
+        thresholds: {
+          overlap: 0, //Overlap scores
+          propability: 0 //Theta
+        }
+      }
+      for (let key of Object.keys(lda.doc_metadata[Object.keys(lda.doc_metadata)[0]])) {
+          options.docs[key] = true
+      }
+      for (let key of Object.keys(lda.topic_metadata[Object.keys(lda.topic_metadata)[0]])) {
+        options.motifs[key] = true
+      }
       this.setState({
-        lda: JSON.parse(event.target.result),
+        lda: lda,
+        options: options,
         imported: true,
         bydocs: true,
         loading: false,
@@ -312,8 +335,8 @@ class App extends React.Component {
         </Navbar>
 
         {!this.state.imported ? <EmptyPage/> : null }
-        {this.state.imported && this.state.bydocs ? <DocsPage lda={this.state.lda} showDoc={(key) => this.showDoc(key)} /> : null}
-        {this.state.imported && this.state.bymotifs ? <MotifsPage lda={this.state.lda} showMotif={(key) => this.showMotif(key)} /> : null}
+        {this.state.imported && this.state.bydocs ? <DocsPage options={this.state.options} lda={this.state.lda} showDoc={(key) => this.showDoc(key)} /> : null}
+        {this.state.imported && this.state.bymotifs ? <MotifsPage options={this.state.options} lda={this.state.lda} showMotif={(key) => this.showMotif(key)} /> : null}
 
         <this.CenterModal
           show={this.state.modal}
@@ -327,10 +350,27 @@ class App extends React.Component {
             <ImportJSON onChange={e => this.fileJSON(e)} /> : null}
           {this.state.showOptions ?
             <Options options={this.state.options} optionChange={(options) => this.optionChange(options)} /> : null}
+          
           {this.state.showdoc ?
-            <DocPage info={this.state.lda.doc_metadata[this.state.dockey]} features={this.state.features} motifs={this.state.motifs} showMotif={(key) => this.showMotif(key)} /> : null}
+            <DocPage
+              lda={this.state.lda}
+              options={this.state.options}
+              dockey={this.state.dockey}
+              features={this.state.features}
+              motifs={this.state.motifs}
+              showMotif={(key) => this.showMotif(key)}
+            /> : null}
+
           {this.state.showmotif ?
-            <MotifPage features={this.state.features} docs={this.state.docs} showDoc={(key) => this.showDoc(key)} /> : null}
+            <MotifPage
+              lda={this.state.lda}
+              options={this.state.options}
+              motifkey={this.state.motifkey}
+              features={this.state.features}
+              docs={this.state.docs}
+              showDoc={(key) => this.showDoc(key)}
+            /> : null}
+
         </this.CenterModal>
       </div>
     );
