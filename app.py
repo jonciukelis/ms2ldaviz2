@@ -49,6 +49,10 @@ def send_react(path):
 def example_json():
     return send_from_directory('', "example.json")
 
+@app.route('/example2/')
+def example2_json():
+    return send_from_directory('', "example2.json")
+
 @app.route('/exampledict/')
 def example_lda():
     return send_from_directory('', "example.dict")

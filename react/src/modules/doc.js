@@ -8,7 +8,7 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ListGroup from 'react-bootstrap/ListGroup'
 import Card from 'react-bootstrap/Card'
-import ListGroupItem from 'react-bootstrap/ListGroupItem';
+//import ListGroupItem from 'react-bootstrap/ListGroupItem';
 
 
 export default class DocPage extends React.Component {
@@ -77,7 +77,18 @@ export default class DocPage extends React.Component {
           <div>
             <Card body>
               <Card.Header>Info about the Doc: </Card.Header>
-              <ListGroupItem><pre>{JSON.stringify(this.state.info, null, 2)}</pre></ListGroupItem>
+              <ListGroup>
+                {Object.keys(this.state.info).map( key => { return (
+                  <ListGroup.Item key={key}>
+                    <span>{key}</span>
+                    <input
+                      value={this.state.info[key]}
+                      onChange={() => {}}
+                    />
+                  </ListGroup.Item>
+                )})}
+              </ListGroup>
+              {/* <ListGroupItem><pre>{JSON.stringify(this.state.info, null, 2)}</pre></ListGroupItem> */}
             </Card>
             <br />
             <Card body>

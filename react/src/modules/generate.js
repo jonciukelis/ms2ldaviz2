@@ -48,6 +48,7 @@ export default class GenerateLink extends React.Component {
                         <Form.Label>Link for quick access</Form.Label>
                         <Form.Control
                             value={this.state.generated_link}
+                            readOnly
                         />
                     </Form.Group>
                 </Form>

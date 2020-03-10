@@ -238,8 +238,10 @@ class App extends React.Component {
     document.body.removeChild(a);
   }
 
-  example() {
+  example(which) {
+    if (which === 1)
     this.linkToState("../example/")
+    else this.linkToState("../example2/")
   }
 
   linkToState(url) {
@@ -329,7 +331,8 @@ class App extends React.Component {
                 </ >}
             </Nav>
             <Nav.Link onClick={() => this.linkModal()}>Share</Nav.Link>
-            <Nav.Link onClick={() => this.example()}>Example</Nav.Link>
+            <Nav.Link onClick={() => this.example(1)}>Example</Nav.Link>
+            <Nav.Link onClick={() => this.example(2)}>Example2</Nav.Link>
             <Nav.Link onClick={() => this.aboutModal()}>About</Nav.Link>
           </Navbar.Collapse>
         </Navbar>
