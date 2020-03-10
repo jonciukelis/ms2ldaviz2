@@ -10,16 +10,46 @@ import ListGroup from 'react-bootstrap/ListGroup'
 import Card from 'react-bootstrap/Card'
 //import ListGroupItem from 'react-bootstrap/ListGroupItem';
 
+//Table import
+import Table from './table.js'
 
 export default class DocPage extends React.Component {
     constructor(props) {
         super(props);
+        let key = props.dockey
+        let lda = props.lda
+        
+        let features = []
+        let featuresc = [{Header: 'Key', accessor: 'key'}, {Header: 'Intensity', accessor: 'inten'}]
+        
+        for (let a of Object.keys(lda.corpus[key]))
+          features.push({key: a, inten: lda.corpus[key][a]})
+
+        let motifs = []
+
+        let motifsc = [
+          {Header: 'Key', accessor: 'key'},
+          {Header: 'Probability', accessor: a => Number(a.prob).toFixed(5), sortMethod: (a, b) => Number(a)-Number(b)},
+          {Header: 'Overlap', accessor: a => Number(a.over).toFixed(7), sortMethod: (a, b) => Number(a)-Number(b)},
+        ]
+
+        for (let a of Object.keys(lda.theta[key])) {
+          if(lda.theta[key][a]>props.options.thresholds.probability && lda.overlap_scores[key][a]>props.options.thresholds.overlap)
+            motifs.push({
+              key: a,
+              prob: lda.theta[key][a],
+              over: lda.overlap_scores[key][a]
+            })
+        }
+
         this.state = {
-          dockey: this.props.dockey,
-          info: this.props.lda.doc_metadata[this.props.dockey],
-          features: this.props.features,
-          motifs: this.props.motifs,
-          lda: this.props.lda
+          dockey: key,
+          info: lda.doc_metadata[key],
+          features: features,
+          motifs: motifs,
+          featuresc: featuresc,
+          motifsc: motifsc,
+          lda: lda
         }
     }
 
@@ -70,7 +100,21 @@ export default class DocPage extends React.Component {
     //     dockey: key,
     //   })
     // }
+    infoChange(e, name){
+      let info = this.state.info
+      info[name] = e.target.value
 
+      this.setState({
+        info: info
+      })
+    }
+    isReadOnly(key){
+      let immutable = ['parentmass']
+      if(immutable.includes(key))
+        return true
+      else
+        return false
+    }
 
     render() {
         return (
@@ -82,8 +126,9 @@ export default class DocPage extends React.Component {
                   <ListGroup.Item key={key}>
                     <span>{key}</span>
                     <input
-                      value={this.state.info[key]}
-                      onChange={() => {}}
+                      value={null === this.state.info[key] ? "" : this.state.info[key]}
+                      readOnly={this.isReadOnly(key)}
+                      onChange={(e, name = key) => {this.infoChange(e,name)}}
                     />
                   </ListGroup.Item>
                 )})}
@@ -94,14 +139,16 @@ export default class DocPage extends React.Component {
             <Card body>
               <Card.Header>Motifs assosiated with Doc</Card.Header>
               <ListGroup>
-                {this.state.motifs.map(key => { return (<ListGroup.Item key={key} action onClick={() => this.props.showMotif(key)}>{key}</ListGroup.Item>) })}
+                {/* {this.state.motifs.map(key => { return (<ListGroup.Item key={key} action onClick={() => this.props.showMotif(key)}>{key}</ListGroup.Item>) })} */}
+                <Table data={this.state.motifs} columns={this.state.motifsc} onClick={(key)=>{this.props.showMotif(key)}}/>
               </ListGroup>
             </Card>
             <br />
             <Card body>
               <Card.Header>Features in the Doc</Card.Header>
               <ListGroup>
-                {this.state.features.map(key => { return (<ListGroup.Item key={key}>{key}</ListGroup.Item>) })}
+                {/* {this.state.features.map(key => { return (<ListGroup.Item key={key}>{key}</ListGroup.Item>) })} */}
+                <Table data={this.state.features} columns={this.state.featuresc} onClick={()=>{}}/>
               </ListGroup>
             </Card>
           </div>

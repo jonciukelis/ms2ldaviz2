@@ -254,7 +254,7 @@ class App extends React.Component {
           motifs: [],
           thresholds: {
             overlap: 0, //Overlap scores
-            propability: 0 //Theta
+            probability: 0 //Theta
           }
         }
         for (let key of Object.keys(lda.doc_metadata[Object.keys(lda.doc_metadata)[0]])) {
@@ -289,12 +289,13 @@ class App extends React.Component {
     var reader = new FileReader();
     reader.onload = (event) => {
       let lda = JSON.parse(event.target.result)
+      //console.log(lda)
       let options = {
         docs: [],
         motifs: [],
         thresholds: {
           overlap: 0, //Overlap scores
-          propability: 0 //Theta
+          probability: 0 //Theta
         }
       }
       for (let key of Object.keys(lda.doc_metadata[Object.keys(lda.doc_metadata)[0]])) {

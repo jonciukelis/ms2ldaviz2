@@ -16,34 +16,47 @@ import Table from './table.js'
 export default class MotifPage extends React.Component {
   constructor(props) {
     super(props);
-    // let key = this.props.motifkey
-    // let lda = this.props.lda
+    let key = props.motifkey
+    let lda = props.lda
     
     
-    // let features = []
-    // let featuresc = [{Header: 'Key', accessor: 'key'}, {Header: 'Value', accessor: 'value'}]
-    // for (let a of Object.keys(lda.beta[key]))
-    //   features.push({key: a, value: lda.beta[key][a]})
+    let features = []
+    let featuresc = [{Header: 'Key', accessor: 'key'}, {Header: 'Probability', accessor: 'prob'}]
+    for (let a of Object.keys(lda.beta[key]))
+      features.push({key: a, prob: lda.beta[key][a]})
 
 
-    // let docs = []
-    // let docsc = [{Header: 'Key', accessor: 'key'}, {Header: 'Value', accessor: 'value'}]
+    let docs = []
+    let docsc = [
+      {Header: 'Key', accessor: 'key'},
+      {Header: 'Probability', accessor: a => Number(a.prob).toFixed(5), sortMethod: (a, b) => Number(a)-Number(b)},
+      {Header: 'Overlap', accessor: a => Number(a.over).toFixed(7), sortMethod: (a, b) => Number(a)-Number(b)},
+    ]
     
-    // for (let a of Object.keys(this.state.lda.theta)) {
-    //   for (let b of Object.keys(this.state.lda.theta[a])) {
-    //     if (b === key) {
-    //       if (!docs.includes(a)) {
-    //         docs.push(a)
-    //       }
-    //     }
-    //   }
-    // }
+    for (let a of Object.keys(lda.theta)) {
+      for (let b of Object.keys(lda.theta[a])) {
+        if (b === key) {
+          if (!docs.includes(a)) {
+            if(lda.overlap_scores[a][b]>props.options.thresholds.overlap && lda.theta[a][b]>props.options.thresholds.probability)
+            docs.push({
+              key: a,
+              prob: lda.theta[a][b],
+              over: lda.overlap_scores[a][b],
+            })
+          }
+        }
+      }
+    }
+
+
     this.state = {
-      motifkey: this.props.motifkey,
-      info: this.props.lda.topic_metadata[this.props.motifkey],
-      features: this.props.features,
-      docs: this.props.docs,
-      lda: this.props.lda,
+      motifkey: key,
+      info: lda.topic_metadata[key],
+      features: features,
+      featuresc: featuresc,
+      docs: docs,
+      docsc: docsc,
+      lda: lda,
       options: this.props.options
     }
   }
@@ -99,6 +112,21 @@ export default class MotifPage extends React.Component {
   //     motifkey: key,
   //   })
   // }
+  infoChange(e, name){
+    let info = this.state.info
+    info[name] = e.target.value
+
+    this.setState({
+      info: info
+    })
+  }
+  isReadOnly(key){
+    let immutable = []
+    if(immutable.includes(key))
+      return true
+    else
+      return false
+  }
 
 
   render() {
@@ -112,8 +140,9 @@ export default class MotifPage extends React.Component {
                 <ListGroup.Item key={key}>
                   <span>{key}</span>
                   <input
-                    value={this.state.info[key]}
-                    onChange={() => { }}
+                    value={null === this.state.info[key] ? "" : this.state.info[key]}
+                    readOnly={this.isReadOnly(key)}
+                    onChange={(e, name = key) => {this.infoChange(e,name)}}
                   />
                 </ListGroup.Item>
               )
@@ -125,14 +154,16 @@ export default class MotifPage extends React.Component {
         <Card body>
           <Card.Header>Docs assosiated with Motif</Card.Header>
           <ListGroup>
-            {this.state.docs.map(key => { return (<ListGroup.Item key={key} action onClick={() => this.props.showDoc(key)}>{key}</ListGroup.Item>) })}
+            <Table data={this.state.docs} columns={this.state.docsc} onClick={(key)=>{this.props.showDoc(key)}}/>
+            {/* {this.state.docs.map(key => { return (<ListGroup.Item key={key} action onClick={() => this.props.showDoc(key)}>{key}</ListGroup.Item>) })} */}
           </ListGroup>
         </Card>
         <br />
         <Card body>
           <Card.Header>Features assosiated with Motif</Card.Header>
           <ListGroup>
-            {this.state.features.map(key => { return (<ListGroup.Item key={key}>{key}</ListGroup.Item>) })}
+            <Table data={this.state.features} columns={this.state.featuresc} onClick={()=>{}}/>
+            {/* {this.state.features.map(key => { return (<ListGroup.Item key={key}>{key}</ListGroup.Item>) })} */}
           </ListGroup>
         </Card>
       </div>
