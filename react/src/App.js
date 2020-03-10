@@ -248,8 +248,24 @@ class App extends React.Component {
     fetch(url, { mode: 'no-cors' })
       .then(response => response.text())
       .then(data => {
+        let lda = JSON.parse(data)
+        let options = {
+          docs: [],
+          motifs: [],
+          thresholds: {
+            overlap: 0, //Overlap scores
+            propability: 0 //Theta
+          }
+        }
+        for (let key of Object.keys(lda.doc_metadata[Object.keys(lda.doc_metadata)[0]])) {
+            options.docs[key] = true
+        }
+        for (let key of Object.keys(lda.topic_metadata[Object.keys(lda.topic_metadata)[0]])) {
+          options.motifs[key] = true
+        }
         this.setState({
-          lda: JSON.parse(data),
+          lda: lda,
+          options: options,
           imported: true,
           bydocs: true,
           loading: false,
