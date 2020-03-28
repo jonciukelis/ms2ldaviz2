@@ -67,6 +67,10 @@ def send_js(path):
 def send_css(path):
     return send_from_directory('react/build/static/css', path)
 
+@app.route('/mass_spec_project/<path:path>')
+def massbank(path):
+    return send_from_directory('mass_spec_project', path)
+
 
 # @app.route('/static/media/<path:path>')
 # def send_media(path):

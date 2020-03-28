@@ -61,6 +61,7 @@ class App extends React.Component {
       modal: false,
       modalName: "",
       modalBody: "",
+      loading: false,
       imported: false,
       about: false,
       import: false,
@@ -245,6 +246,10 @@ class App extends React.Component {
   }
 
   linkToState(url) {
+    this.setState({
+      loading: true
+    })
+    this.importJSON()
     fetch(url, { mode: 'no-cors' })
       .then(response => response.text())
       .then(data => {
@@ -254,7 +259,8 @@ class App extends React.Component {
           motifs: [],
           thresholds: {
             overlap: 0, //Overlap scores
-            probability: 0 //Theta
+            probability: 0, //Theta
+            feature_probability: 0,
           }
         }
         for (let key of Object.keys(lda.doc_metadata[Object.keys(lda.doc_metadata)[0]])) {
@@ -271,7 +277,12 @@ class App extends React.Component {
           loading: false,
         })
       })
-      .catch(error => console.error(error));
+      .catch(error => {
+        this.setState({
+          loading: false,
+        })
+        console.error(error)
+      });
   }
 
   discardLDA() {
@@ -295,7 +306,8 @@ class App extends React.Component {
         motifs: [],
         thresholds: {
           overlap: 0, //Overlap scores
-          probability: 0 //Theta
+          probability: 0, //Theta
+          feature_probability: 0
         }
       }
       for (let key of Object.keys(lda.doc_metadata[Object.keys(lda.doc_metadata)[0]])) {
@@ -338,7 +350,8 @@ class App extends React.Component {
                     <NavDropdown.Item onClick={() => this.byToggle(true)}>By Docs</NavDropdown.Item>
                     <NavDropdown.Item onClick={() => this.byToggle(false)}>By Mass2Motifs</NavDropdown.Item>
                     <NavDropdown.Divider />
-                    <NavDropdown.Item>Store In-Browser</NavDropdown.Item>
+                    <NavDropdown.Item>Store In-Browser (Unavailable)</NavDropdown.Item>
+                    <NavDropdown.Item>Match with MotifDB (Unavailable)</NavDropdown.Item>
                   </NavDropdown>
                   <Nav.Link onClick={() => this.discardLDA()}>Discard</Nav.Link>
                   <Nav.Link onClick={() => this.optionsModal()}>Options</Nav.Link>
@@ -348,8 +361,8 @@ class App extends React.Component {
                 </ >}
             </Nav>
             <Nav.Link onClick={() => this.linkModal()}>Share</Nav.Link>
-            <Nav.Link onClick={() => this.example(1)}>Example</Nav.Link>
-            <Nav.Link onClick={() => this.example(2)}>Example2</Nav.Link>
+            {/* <Nav.Link onClick={() => this.example(1)}>Example</Nav.Link> */}
+            <Nav.Link onClick={() => this.example(2)}>Example</Nav.Link>
             <Nav.Link onClick={() => this.aboutModal()}>About</Nav.Link>
           </Navbar.Collapse>
         </Navbar>
@@ -367,7 +380,7 @@ class App extends React.Component {
           {this.state.about ?
             <AboutPage /> : null}
           {this.state.import ?
-            <ImportJSON onChange={e => this.fileJSON(e)} /> : null}
+            <ImportJSON onChange={e => this.fileJSON(e)} loading={this.state.loading} /> : null}
           {this.state.showOptions ?
             <Options options={this.state.options} optionChange={(options) => this.optionChange(options)} /> : null}
           

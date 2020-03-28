@@ -13,15 +13,18 @@ import Card from 'react-bootstrap/Card'
 //Table import
 import Table from './table.js'
 
+//Chart import
+import FreqChart from './frequency_chart.js'
+
 export default class MotifPage extends React.Component {
   constructor(props) {
     super(props);
     let key = props.motifkey
     let lda = props.lda
     
-    
+
     let features = []
-    let featuresc = [{Header: 'Key', accessor: 'key'}, {Header: 'Probability', accessor: 'prob'}]
+    let featuresc = [{Header: 'Key', accessor: 'key'}, {Header: 'Probability', accessor: a => Number(a.prob).toFixed(5), sortMethod: (a, b) => Number(a)-Number(b)}]
     for (let a of Object.keys(lda.beta[key]))
       features.push({key: a, prob: lda.beta[key][a]})
 
@@ -33,11 +36,20 @@ export default class MotifPage extends React.Component {
       {Header: 'Overlap', accessor: a => Number(a.over).toFixed(7), sortMethod: (a, b) => Number(a)-Number(b)},
     ]
     
+
+    let docFragments = {}// {fragment: [inst, totalInten]}
     for (let a of Object.keys(lda.theta)) {
       for (let b of Object.keys(lda.theta[a])) {
         if (b === key) {
+          for(let fragment of Object.keys(lda.phi[a]))
+            try {
+              docFragments[fragment] = [docFragments[fragment][0] + 1, docFragments[fragment][1] + lda.corpus[a][fragment]]
+            } catch {
+              docFragments[fragment] = [1, lda.corpus[a][fragment]]
+            }
           if (!docs.includes(a)) {
             if(lda.overlap_scores[a][b]>props.options.thresholds.overlap && lda.theta[a][b]>props.options.thresholds.probability)
+
             docs.push({
               key: a,
               prob: lda.theta[a][b],
@@ -47,9 +59,30 @@ export default class MotifPage extends React.Component {
         }
       }
     }
+    let totalIntensities = {}
+    for(let a of Object.keys(lda.word_index))
+      totalIntensities[a] = 0
+    for(let a of Object.keys(lda.phi))
+      for(let b of Object.keys(lda.corpus[a]))
+        totalIntensities[b] = totalIntensities[b] + lda.corpus[a][b]
+
+    //props.data = {thing: [inst, intenM, intenD]}
+    let data = {}
+    for (let a of Object.keys(lda.beta[key])){
+      if(lda.beta[key][a] > props.options.thresholds.feature_probability)
+        data[a] = [
+          docFragments[a][0],
+          docFragments[a][1],
+          totalIntensities[a]
+        ]
+    }
+    console.log(data)
+        
 
 
     this.state = {
+      chartData: data,
+      fragments: true,
       motifkey: key,
       info: lda.topic_metadata[key],
       features: features,
@@ -132,6 +165,11 @@ export default class MotifPage extends React.Component {
   render() {
     return (
       <div>
+        {this.state.fragments?
+            <Card body>
+            <Card.Header>Fragments in Motif</Card.Header>
+              <FreqChart data={this.state.chartData}></FreqChart>
+            </Card>: null}
         <Card body>
           <Card.Header>Info about the Motif: </Card.Header>
           <ListGroup>

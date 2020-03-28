@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "MS2LDAviz2",
+  "name": "Front-end based MS2LDA file explorer tool",
   "icons": [
     {
       "src": "favicon.ico",

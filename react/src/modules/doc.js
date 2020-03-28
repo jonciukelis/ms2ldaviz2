@@ -8,10 +8,14 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ListGroup from 'react-bootstrap/ListGroup'
 import Card from 'react-bootstrap/Card'
+import Button from 'react-bootstrap/Button'
 //import ListGroupItem from 'react-bootstrap/ListGroupItem';
 
 //Table import
 import Table from './table.js'
+
+//Chart import
+import MassChart from './mass_chart.js'
 
 export default class DocPage extends React.Component {
     constructor(props) {
@@ -20,7 +24,7 @@ export default class DocPage extends React.Component {
         let lda = props.lda
         
         let features = []
-        let featuresc = [{Header: 'Key', accessor: 'key'}, {Header: 'Intensity', accessor: 'inten'}]
+        let featuresc = [{Header: 'Key', accessor: 'key'}, {Header: 'Intensity', accessor: a => Number(a.inten), sortMethod: (a, b) => Number(a)-Number(b)}]
         
         for (let a of Object.keys(lda.corpus[key]))
           features.push({key: a, inten: lda.corpus[key][a]})
@@ -42,7 +46,29 @@ export default class DocPage extends React.Component {
             })
         }
 
+        //props.data = {peaks: [[],[],[]], losses: [[],[],[]],}
+        let chartData = {peaks: [], losses: []}
+        let chart2Data = {peaks: [], losses: []}
+        for (let a of Object.keys(lda.corpus[key])){
+          if(a.includes('fragment')){
+            chartData.peaks.push([Number(a.split('_')[1]), lda.corpus[key][a]])
+          }
+          else {
+            chart2Data.losses.push([Number(a.split('_')[1]), lda.corpus[key][a]])
+          }
+        }
+        let fragments = false
+        let losses = false
+        if(chartData.peaks.length !== 0)fragments = true;
+        if(chart2Data.losses.length !== 0)losses = true;
+
+        console.log(chartData)
+
         this.state = {
+          fragments: fragments,
+          losses: losses,
+          chartData: chartData,
+          chart2Data: chart2Data,
           dockey: key,
           info: lda.doc_metadata[key],
           features: features,
@@ -115,10 +141,31 @@ export default class DocPage extends React.Component {
       else
         return false
     }
+    william(data) {
+      var url = "/mass_spec_project/index.html"
+      var popUpObj = window.open(url, "Popup","toolbar=no,scrollbars=no,location=no,statusbar=no,menubar=no,resizable=0,width=1400,height=850,left = 0,top = 0");
+      popUpObj.addEventListener('load', ()=>{popUpObj.peakArray = []; setTimeout(()=>{popUpObj.clearPlot(); setTimeout(()=>{popUpObj.getData(data)},500)},500);}, false);     
+    } 
 
     render() {
         return (
           <div>
+            <Card body>
+            <Button onClick={()=>{this.william(this.state.chartData)}}>Link to mass_spec</Button>
+            </Card>
+            <br/>
+            {this.state.fragments?
+            <Card body>
+            <Card.Header>Fragments in Doc</Card.Header>
+              <MassChart data={this.state.chartData}></MassChart>
+            </Card>: null}
+            <br/>
+            {this.state.losses?
+            <Card body>
+            <Card.Header>Losses in Doc</Card.Header>
+              <MassChart data={this.state.chart2Data}></MassChart>
+            </Card>: null}
+            <br/>
             <Card body>
               <Card.Header>Info about the Doc: </Card.Header>
               <ListGroup>

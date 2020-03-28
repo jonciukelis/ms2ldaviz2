@@ -12,7 +12,7 @@ export default class ImportJSON extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: false,
+            loading: this.props.loading,
         }
     }
 

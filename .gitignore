@@ -109,6 +109,9 @@ flask/
 # Unused notes and stuff
 not_in_use/
 
+# mass_spec_files
+mass_spec_project/
+
 #===========================================================
 # React files:
 
