@@ -22,7 +22,7 @@ export default class GenerateLink extends React.Component {
     generate_experiment_link(url) {
         url = url.target.value
         let enc = encodeURIComponent(url)
-        let url2 = window.location.hostname + '?fetch_project=' + enc
+        let url2 = window.location.href + '?fetch_project=' + enc
         this.setState({
             given_link: url,
             generated_link: url2,

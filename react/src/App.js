@@ -87,7 +87,7 @@ class App extends React.Component {
     let url_string = window.location.href; // www.test.com?filename=test
     let url = new URL(url_string);
     let paramValue = decodeURIComponent(url.searchParams.get("fetch_project"));
-    if (paramValue) { this.linkToState(paramValue); console.log(paramValue) }
+    if (paramValue) { this.linkToState(paramValue); this.setState({modal: true, import: true, loading: true}) }
   }
 
   //Site Modal management ====================================================================
