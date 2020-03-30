@@ -18,7 +18,7 @@ export default class DocsPage extends React.Component {
         return (
             <header className={"vertical-center d-flex justify-content-center"}>
                 <h1>
-                    Import a file to get started!
+                    Import a file or press Example to get started!
                 </h1>
             </header>
         );

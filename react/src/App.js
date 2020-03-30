@@ -173,11 +173,11 @@ class App extends React.Component {
     })
   }
 
-  optionChange(options){
-    this.setState({
-      options: options,
-    })
-  }
+  // optionChange(options){
+  //   this.setState({
+  //     options: options,
+  //   })
+  // }
 
   //Large unseperated modal functions
   showDoc(key) {
@@ -276,11 +276,13 @@ class App extends React.Component {
           bydocs: true,
           loading: false,
         })
+        this.setModalShow(false)
       })
       .catch(error => {
         this.setState({
           loading: false,
         })
+        this.setModalShow(false)
         console.error(error)
       });
   }
@@ -321,6 +323,7 @@ class App extends React.Component {
         options: options,
         imported: true,
         bydocs: true,
+        bymotifs: false,
         loading: false,
       })
       this.setModalShow(false)
@@ -350,8 +353,8 @@ class App extends React.Component {
                     <NavDropdown.Item onClick={() => this.byToggle(true)}>By Docs</NavDropdown.Item>
                     <NavDropdown.Item onClick={() => this.byToggle(false)}>By Mass2Motifs</NavDropdown.Item>
                     <NavDropdown.Divider />
-                    <NavDropdown.Item>Store In-Browser (Unavailable)</NavDropdown.Item>
-                    <NavDropdown.Item>Match with MotifDB (Unavailable)</NavDropdown.Item>
+                    {/* <NavDropdown.Item>Store In-Browser (Unavailable)</NavDropdown.Item>
+                    <NavDropdown.Item>Match with MotifDB (Unavailable)</NavDropdown.Item> */}
                   </NavDropdown>
                   <Nav.Link onClick={() => this.discardLDA()}>Discard</Nav.Link>
                   <Nav.Link onClick={() => this.optionsModal()}>Options</Nav.Link>
@@ -361,8 +364,8 @@ class App extends React.Component {
                 </ >}
             </Nav>
             <Nav.Link onClick={() => this.linkModal()}>Share</Nav.Link>
-            {/* <Nav.Link onClick={() => this.example(1)}>Example</Nav.Link> */}
-            <Nav.Link onClick={() => this.example(2)}>Example</Nav.Link>
+            {!this.state.imported ? <Nav.Link onClick={() => this.example(1)}>Example</Nav.Link> : null}
+            {!this.state.imported ? <Nav.Link onClick={() => this.example(2)}>Example 2</Nav.Link> : null}
             <Nav.Link onClick={() => this.aboutModal()}>About</Nav.Link>
           </Navbar.Collapse>
         </Navbar>

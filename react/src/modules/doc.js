@@ -9,7 +9,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import ListGroup from 'react-bootstrap/ListGroup'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
-//import ListGroupItem from 'react-bootstrap/ListGroupItem';
+import Form from 'react-bootstrap/Form';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 
 //Table import
 import Table from './table.js'
@@ -170,13 +172,20 @@ export default class DocPage extends React.Component {
               <Card.Header>Info about the Doc: </Card.Header>
               <ListGroup>
                 {Object.keys(this.state.info).map( key => { return (
-                  <ListGroup.Item key={key}>
-                    <span>{key}</span>
-                    <input
-                      value={null === this.state.info[key] ? "" : this.state.info[key]}
-                      readOnly={this.isReadOnly(key)}
-                      onChange={(e, name = key) => {this.infoChange(e,name)}}
-                    />
+                  <ListGroup.Item>
+                  <Form.Group
+                        as={Row}
+                        key={key}
+                        >
+                        <Form.Label column sm="4">{key}</Form.Label>
+                        <Col sm="5">
+                          <Form.Control
+                          value={null === this.state.info[key] ? "" : this.state.info[key]}
+                          readOnly={this.isReadOnly(key)}
+                          onChange={(e, name = key) => {this.infoChange(e,name)}}
+                        />
+                        </Col>
+                  </Form.Group>
                   </ListGroup.Item>
                 )})}
               </ListGroup>

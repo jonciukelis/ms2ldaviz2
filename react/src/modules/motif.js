@@ -8,7 +8,9 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ListGroup from 'react-bootstrap/ListGroup'
 import Card from 'react-bootstrap/Card'
-//import ListGroupItem from 'react-bootstrap/ListGroupItem';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import Form from 'react-bootstrap/Form';
 
 //Table import
 import Table from './table.js'
@@ -66,15 +68,20 @@ export default class MotifPage extends React.Component {
       for(let b of Object.keys(lda.corpus[a]))
         totalIntensities[b] = totalIntensities[b] + lda.corpus[a][b]
 
+    console.log(docFragments)
     //props.data = {thing: [inst, intenM, intenD]}
     let data = {}
     for (let a of Object.keys(lda.beta[key])){
-      if(lda.beta[key][a] > props.options.thresholds.feature_probability)
+      try{
+        if(lda.beta[key][a] > props.options.thresholds.feature_probability)
         data[a] = [
           docFragments[a][0],
           docFragments[a][1],
           totalIntensities[a]
         ]
+      } catch{
+        console.log(a)
+      }
     }
     console.log(data)
         
@@ -175,13 +182,20 @@ export default class MotifPage extends React.Component {
           <ListGroup>
             {Object.keys(this.state.info).map(key => {
               return (
-                <ListGroup.Item key={key}>
-                  <span>{key}</span>
-                  <input
-                    value={null === this.state.info[key] ? "" : this.state.info[key]}
-                    readOnly={this.isReadOnly(key)}
-                    onChange={(e, name = key) => {this.infoChange(e,name)}}
-                  />
+                <ListGroup.Item>
+                <Form.Group
+                      as={Row}
+                      key={key}
+                      >
+                      <Form.Label column sm="4">{key}</Form.Label>
+                      <Col sm="5">
+                        <Form.Control
+                        value={null === this.state.info[key] ? "" : this.state.info[key]}
+                        readOnly={this.isReadOnly(key)}
+                        onChange={(e, name = key) => {this.infoChange(e,name)}}
+                      />
+                      </Col>
+                </Form.Group>
                 </ListGroup.Item>
               )
             })}

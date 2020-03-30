@@ -25,20 +25,14 @@ export default class MotifsPage extends React.Component {
         for (let key of Object.keys(props.lda.topic_metadata)) {
             searchData[key] = JSON.stringify(props.lda.topic_metadata[key])
         }
-        //Top level keys
-        let columns = []
-        columns.push({Header: 'Key', accessor: 'key'})
-        for (let key of Object.keys(props.lda.topic_metadata[Object.keys(props.lda.topic_metadata)[0]])) {
-            if(props.options.motifs[key])
-            columns.push({Header: key, accessor: key})
-        }
         
         this.state = {
             search: "",
             searchtemp: "",
-            columns: columns,
+            //columns: columns,
             searchData: searchData,
-            lda: props.lda
+            lda: props.lda, 
+            options: props.options
         }
         this.onChangeDebounced = debounce(this.onChangeDebounced, 500)
     }
@@ -66,10 +60,28 @@ export default class MotifsPage extends React.Component {
     }
 
     render() {
+        //Top level keys
+        const columns = []
+        columns.push({Header: 'Key', accessor: 'key'})
+        columns.push({Header: 'Degree', accessor: 'degree'})
+        for (let key of Object.keys(this.state.lda.topic_metadata[Object.keys(this.state.lda.topic_metadata)[0]]))
+            if(this.state.options.motifs[key])
+                columns.push({Header: key, accessor: key})
+
         const data = []
         for (let key of Object.keys(this.state.searchData)) {
             if (this.state.searchData[key].includes(this.state.searchtemp)){
-                data.push({key: key,...this.state.lda.topic_metadata[key]})
+                //get degree
+                let docs = []
+                let degree = 0
+                for (let a of Object.keys(this.state.lda.theta))
+                    for (let b of Object.keys(this.state.lda.theta[a]))
+                      if (b === key)
+                        if (!docs.includes(a))
+                          if(this.state.lda.overlap_scores[a][b]>this.state.options.thresholds.overlap && this.state.lda.theta[a][b]>this.state.options.thresholds.probability)
+                            {degree += 1; docs.push(a)}
+
+                data.push({key: key, degree: degree,...this.state.lda.topic_metadata[key]})
             }
         }
 
@@ -84,7 +96,7 @@ export default class MotifsPage extends React.Component {
                         className="mr-sm-2"
                     />
                 </Card.Header>
-                <Table data={data} columns={this.state.columns} onClick={(key)=>{this.props.showMotif(key)}}/>
+                <Table data={data} columns={columns} onClick={(key)=>{this.props.showMotif(key)}}/>
             </Card>
         );
         // return (

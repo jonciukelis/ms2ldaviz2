@@ -25,22 +25,15 @@ export default class DocsPage extends React.Component {
         for (let key of Object.keys(props.lda.doc_metadata)) {
             searchData[key] = JSON.stringify(props.lda.doc_metadata[key])
         }
-        //Top level keys
-        let columns = []
-        columns.push({Header: 'Name', accessor: 'name'})
-        for (let key of Object.keys(props.lda.doc_metadata[Object.keys(props.lda.doc_metadata)[0]])) {
-            if(props.options.docs[key]){
-                columns.push({Header: key, accessor: key})
-                console.log(props.options.docs[key])
-            }
-        }
+
 
         this.state = {
             search: "",
             searchtemp: "",
-            columns: columns,
+            //columns: columns,
             searchData: searchData,
-            lda: props.lda
+            lda: props.lda,
+            options: props.options
         }
         this.onChangeDebounced = debounce(this.onChangeDebounced, 500)
     }
@@ -68,6 +61,13 @@ export default class DocsPage extends React.Component {
     }
 
     render() {
+        //Top level keys
+        const columns = []
+        columns.push({Header: 'Name', accessor: 'name'})
+        for (let key of Object.keys(this.state.lda.doc_metadata[Object.keys(this.state.lda.doc_metadata)[0]])) 
+            if(this.state.options.docs[key])
+                columns.push({Header: key, accessor: key})
+
         const data = []
         for (let key of Object.keys(this.state.searchData)) {
             if (this.state.searchData[key].includes(this.state.searchtemp)){
@@ -86,7 +86,7 @@ export default class DocsPage extends React.Component {
                         className="mr-sm-2"
                     />
                 </Card.Header>
-                <Table data={data} columns={this.state.columns} onClick={(key)=>{this.props.showDoc(key)}}/>
+                <Table data={data} columns={columns} onClick={(key)=>{this.props.showDoc(key)}}/>
             </Card>
         );
     }
